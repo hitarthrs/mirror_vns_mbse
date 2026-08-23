@@ -79,44 +79,65 @@ package FusionDeviceBeamConfiguration {
 
                 // --- FACILITY BOUNDARY PORTS ---
                 // How the whole machine talks to the building
-                port gridPowerBus : ~ElectricalPowerPort; 
-                port diagnosticTelemetryBus : DiagnosticDataPort;
+                port gridPowerBus : ElectricalPowerPort; 
+                port diagnosticTelemetryBus : ~DiagnosticDataPort;
                 port masterControlBus : ~ControlPort;
 
                 // --- INTERNAL CONNECTIONS ---
                 
-                // 1. Power Distribution
-                connect gridPowerBus to powerConversionSystem.gridInput;
-                connect powerConversionSystem.magnetPowerOut to highFieldMagnetSystem.powerIn;
-                connect powerConversionSystem.magnetPowerOut to lowFieldMagnetSystem.powerIn;
-                connect powerConversionSystem.heatingPowerOut to heatingAndCurrentDriveSystem.powerIn;
-                connect powerConversionSystem.heatingPowerOut to endCellSystem.powerIn;
+                // 1. Power Distribution (PowerTransferInterface)
+                interface gridToConverterPower : PowerTransferInterface
+                    connect gridPowerBus to powerConversionSystem.gridInput;
+                interface converterToHFMagnetPower : PowerTransferInterface
+                    connect powerConversionSystem.magnetPowerOut to highFieldMagnetSystem.powerIn;
+                interface converterToLFMagnetPower : PowerTransferInterface
+                    connect powerConversionSystem.magnetPowerOut to lowFieldMagnetSystem.powerIn;
+                interface converterToHeatingPower : PowerTransferInterface
+                    connect powerConversionSystem.heatingPowerOut to heatingAndCurrentDriveSystem.powerIn;
+                interface converterToEndCellPower : PowerTransferInterface
+                    connect powerConversionSystem.heatingPowerOut to endCellSystem.powerIn;
 
-                // 2. Closed-Loop Cooling (Supply AND Return)
-                connect coolingSystem.supplyPort to highFieldMagnetSystem.coolantIn;
-                connect highFieldMagnetSystem.coolantOut to coolingSystem.returnPort;
+                // 2. Closed-Loop Cooling (CoolantLoopInterface)
+                interface coolingToHFMagnetSupply : CoolantLoopInterface
+                    connect coolingSystem.supplyPort to highFieldMagnetSystem.coolantIn;
+                interface hfMagnetToCoolingReturn : CoolantLoopInterface
+                    connect highFieldMagnetSystem.coolantOut to coolingSystem.returnPort;
                 
-                connect coolingSystem.supplyPort to lowFieldMagnetSystem.coolantIn;
-                connect lowFieldMagnetSystem.coolantOut to coolingSystem.returnPort;
+                interface coolingToLFMagnetSupply : CoolantLoopInterface
+                    connect coolingSystem.supplyPort to lowFieldMagnetSystem.coolantIn;
+                interface lfMagnetToCoolingReturn : CoolantLoopInterface
+                    connect lowFieldMagnetSystem.coolantOut to coolingSystem.returnPort;
                 
-                connect coolingSystem.supplyPort to vacuumVessel.coolantIn;
-                connect vacuumVessel.coolantOut to coolingSystem.returnPort;
+                interface coolingToVesselSupply : CoolantLoopInterface
+                    connect coolingSystem.supplyPort to vacuumVessel.coolantIn;
+                interface vesselToCoolingReturn : CoolantLoopInterface
+                    connect vacuumVessel.coolantOut to coolingSystem.returnPort;
 
                 // 3. Process & Physics Flows
-                connect fuelingSystem.fuelingOut to vacuumVessel.fuelingIn; // Fuel goes INTO the vessel
-                connect vacuumVessel.vacuumPort to endCellSystem.vacuumPumpIn; // Vessel exhausts to End Cell pumps
-                connect vacuumVessel.neutronPort to endCellSystem.neutronSink; 
+                interface fuelingToVessel : FuelingInjectionInterface
+                    connect fuelingSystem.fuelingOut to vacuumVessel.fuelingIn; // Fuel goes INTO the vessel
+                interface vesselToVacuumPump : VacuumPumpingInterface
+                    connect vacuumVessel.vacuumPort to endCellSystem.vacuumPumpIn; // Vessel exhausts to end-cell pumps
+                interface vesselToNeutronSink : NeutronTransportInterface
+                    connect vacuumVessel.neutronPort to endCellSystem.neutronSink;
 
                 // 4. Control & Data
-                connect controlAndInterlockSystem.controlPort to highFieldMagnetSystem.controlPort;
-                connect controlAndInterlockSystem.controlPort to lowFieldMagnetSystem.controlPort;
-                connect controlAndInterlockSystem.controlPort to heatingAndCurrentDriveSystem.controlPort;
-                connect controlAndInterlockSystem.controlPort to fuelingSystem.controlPort;
+                interface controlToHFMagnet : ControlInterface
+                    connect controlAndInterlockSystem.controlPort to highFieldMagnetSystem.controlPort;
+                interface controlToLFMagnet : ControlInterface
+                    connect controlAndInterlockSystem.controlPort to lowFieldMagnetSystem.controlPort;
+                interface controlToHeating : ControlInterface
+                    connect controlAndInterlockSystem.controlPort to heatingAndCurrentDriveSystem.controlPort;
+                interface controlToFueling : ControlInterface
+                    connect controlAndInterlockSystem.controlPort to fuelingSystem.controlPort;
                 
-                connect controlAndInterlockSystem.interlockPort to highFieldMagnetSystem.interlockPort;
-                connect controlAndInterlockSystem.interlockPort to heatingAndCurrentDriveSystem.interlockPort;
+                interface interlockToHFMagnet : InterlockInterface
+                    connect controlAndInterlockSystem.interlockPort to highFieldMagnetSystem.interlockPort;
+                interface interlockToHeating : InterlockInterface
+                    connect controlAndInterlockSystem.interlockPort to heatingAndCurrentDriveSystem.interlockPort;
                 
-                connect diagnosticsSystem.diagnosticDataOut to diagnosticTelemetryBus; // Send data to facility
+                interface diagnosticsToFacility : DiagnosticsInterface
+                    connect diagnosticsSystem.diagnosticDataOut to diagnosticTelemetryBus;
             }
 
             // Finally, instantiate the actual device using our blueprint

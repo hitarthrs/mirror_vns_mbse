@@ -1,0 +1,59 @@
+version: 1
+
+workflows:
+  neutronics:
+    description: >
+      Defines the extraction boundary for neutronics analysis inputs from the
+      mirror SysML model.
+    root:
+      package: MirrorDeviceVersions
+      specializes: Definitions::MirrorDevice
+    parts:
+      vacuumVessel:
+        attributes:
+          - outerAxialLength
+          - centralAxialLength
+          - centralRadius
+          - bottleneckRadius
+          - leftBottleneckLength
+          - rightBottleneckLength
+        children:
+          firstWall:
+            attributes:
+              - firstWallThickness
+              - firstWallMaterialComposition
+      centralCellSystems:
+        attributes:
+          - axialLength
+          - layerThicknessArray
+          - layerMaterialArray
+          - analyzedTritiumBreedingRatio
+      endCellSystems:
+        attributes:
+          - axialLength
+          - diameter
+          - shellThickness
+          - shellMaterial
+          - innerMaterial
+      lowFieldMagnetSystem:
+        attributes:
+          - numberOfCoils
+          - magnetAxialThickness
+          - magnetRadialThickness
+        children:
+          lowFieldShielding:
+            attributes:
+              - shieldRadialThickness
+              - shieldAxialThickness
+              - shieldMaterial
+      highFieldMagnetSystem:
+        attributes:
+          - numberOfCoils
+          - magnetAxialThickness
+          - magnetRadialThickness
+        children:
+          highFieldShielding:
+            attributes:
+              - shieldRadialThickness
+              - shieldAxialThickness
+              - shieldMaterial

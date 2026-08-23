@@ -1,0 +1,69 @@
+# ________________________________________ AUTO-GENERATED PARAMETRIC INPUT ________________________________________ #
+# Source: Mirror SysML (device=MirrorDevice2)
+# Shape aligned with: simple_parametric_input_new.yaml
+#
+# Loaded files: /home/hrshah3/vns-research/mirror_model/fusionunits.sysml, /home/hrshah3/vns-research/mirror_model/CommonSubsystemDefinitions.sysml, /home/hrshah3/vns-research/mirror_model/FusionMaterials.sysml, /home/hrshah3/vns-research/mirror_model/vns_model_v1.sysml
+#
+# Omitted sections: ports (not modeled on Mirror device tree); hf_coil.magnet.bore_radius / material;
+# lf_coil.shell_thicknesses, positions, materials.magnet unless present in MBSE.
+# Tallies / vacuum_structure: not emitted — extend this script or merge with a hand template.
+# _________________________________________________________________________________________________________________ #
+vacuum_vessel:
+  bottleneck_radius: 25
+  central_axial_length: 600
+  central_radius: 75
+  left_bottleneck_length: 350
+  outer_axial_length: 471.55
+  right_bottleneck_length: 350
+  axial_midplane: 0.0
+  structure:
+    first_wall:
+      thickness: 2
+      material: tungsten
+central_cell:
+  axial_length: 600
+  layers:
+  - thickness: 10
+    material: stainless
+  - thickness: 10
+    material: stainless
+  - thickness: 10
+    material: stainless
+  - thickness: 10
+    material: stainless
+  - thickness: 10
+    material: stainless
+  - thickness: 10
+    material: stainless
+  - thickness: 10
+    material: stainless
+  - thickness: 10
+    material: stainless
+  - thickness: 10
+    material: stainless
+  - thickness: 10
+    material: stainless
+lf_coil:
+  inner_dimensions:
+    axial_length: 6
+    radial_thickness: 6
+  materials:
+    shield: rafm_steel
+hf_coil:
+  magnet:
+    radial_thickness: 100
+    axial_thickness: 150
+  shield:
+    radial_thickness:
+    - 25
+    - 25
+    axial_thickness:
+    - 25
+    - 25
+    material: cooled_w2b5
+end_cell:
+  axial_length: 500
+  shell_thickness: 1
+  diameter: 350
+  shell_material: stainless
+  inner_material: air
