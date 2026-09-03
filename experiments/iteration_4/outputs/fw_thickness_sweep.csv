@@ -1,0 +1,5 @@
+fwThickness,tbr,capitalCost,lcoe,feasible,CentralCellTbrGate,CapitalCostGate
+1.0,1.0,250.0,8.333,False,False,True
+2.333333333333333,1.1333333333333333,310.0,10.333,False,False,True
+3.6666666666666665,1.2666666666666666,366.0,12.2,True,True,True
+5.0,1.4,422.0,14.067,True,True,True

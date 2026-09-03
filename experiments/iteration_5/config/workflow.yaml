@@ -1,0 +1,20 @@
+model:
+  packages:
+    - name: MirrorTradeArchitecture
+      file: sysml_files/MirrorTradeArchitecture.sysml
+      mutable: true
+    - name: MirrorTradeRequirements
+      file: sysml_files/MirrorTradeRequirements.sysml
+      mutable: false
+    - name: MirrorTradeStudy
+      file: sysml_files/MirrorTradeStudy.sysml
+      mutable: true
+    - name: BlanketPhysicsDisciplines
+      file: sysml_files/catalogues/blanket_physics_disciplines.sysml
+      mutable: false
+    - name: PlantEconomicsDisciplines
+      file: sysml_files/catalogues/plant_economics_disciplines.sysml
+      mutable: false
+
+study:
+  study_part: mirrorBlanketTradeStudy

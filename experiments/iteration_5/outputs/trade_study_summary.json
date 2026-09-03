@@ -1,0 +1,94 @@
+{
+  "mode": "grid",
+  "discipline_count": 2,
+  "active_analysis_methods": [
+    "blanketPhysics",
+    "plantEconomics"
+  ],
+  "design_variables": [
+    "breederThickness",
+    "centralCellLength"
+  ],
+  "design_bounds": {
+    "breederThickness": [
+      20.0,
+      80.0
+    ],
+    "centralCellLength": [
+      4.0,
+      12.0
+    ]
+  },
+  "fixed_parameters": {
+    "firstWallThickness": 2.0,
+    "plantAvailability": 0.85,
+    "annualChargeRate": 0.09,
+    "electricityPrice": 70.0
+  },
+  "minimization_objectives": [
+    "lcoe"
+  ],
+  "evaluated_points": 9,
+  "feasible_points": 3,
+  "pareto_points": 1,
+  "pareto_front": [
+    {
+      "design": {
+        "breederThickness": 50.0,
+        "centralCellLength": 12.0
+      },
+      "results": {
+        "firstWallThickness": 2.0,
+        "plantAvailability": 0.85,
+        "annualChargeRate": 0.09,
+        "electricityPrice": 70.0,
+        "breederThickness": 50.0,
+        "centralCellLength": 12.0,
+        "tbr": 1.103550481877631,
+        "thermalPower": 85.6470752257153,
+        "magnetHeating": 40.18201335008802,
+        "blanketMass": 330.00000000000006,
+        "capitalCost": 471.5546040050265,
+        "annualOperatingCost": 42.46455397103866,
+        "lcoe": 66.58723756632031
+      },
+      "requirements": {
+        "TritiumSelfSufficiency": true,
+        "MinimumThermalPower": true,
+        "MagnetHeatingLimit": true,
+        "CapitalCostLimit": true
+      },
+      "feasible": true
+    }
+  ],
+  "selected": {
+    "design": {
+      "breederThickness": 50.0,
+      "centralCellLength": 12.0
+    },
+    "results": {
+      "firstWallThickness": 2.0,
+      "plantAvailability": 0.85,
+      "annualChargeRate": 0.09,
+      "electricityPrice": 70.0,
+      "breederThickness": 50.0,
+      "centralCellLength": 12.0,
+      "tbr": 1.103550481877631,
+      "thermalPower": 85.6470752257153,
+      "magnetHeating": 40.18201335008802,
+      "blanketMass": 330.00000000000006,
+      "capitalCost": 471.5546040050265,
+      "annualOperatingCost": 42.46455397103866,
+      "lcoe": 66.58723756632031
+    },
+    "requirements": {
+      "TritiumSelfSufficiency": true,
+      "MinimumThermalPower": true,
+      "MagnetHeatingLimit": true,
+      "CapitalCostLimit": true
+    },
+    "feasible": true
+  },
+  "csv": "/home/hrshah3/paratan/mirror_vns_mbse/experiments/iteration_5/outputs/trade_space.csv",
+  "saved_selected_design": false
+}

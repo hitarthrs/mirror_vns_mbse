@@ -1,0 +1,28 @@
+{
+  "timestamp_utc": "2026-09-03T15:11:41.325381+00:00",
+  "model": "/home/hrshah3/paratan/mirror_vns_mbse/experiments/iteration_2/sysml_files/mirror_toy_mdao.sysml",
+  "inputs": {
+    "fw_thickness_cm": 4.0
+  },
+  "discipline": {
+    "surrogate_id": 2,
+    "part": "localSurrogate2"
+  },
+  "outputs": {
+    "tbr": 1.1593994150290161
+  },
+  "stored_solution": {
+    "designVariablesSolution": 4.0,
+    "fwThickness": 4.0,
+    "objectiveFunctionSolution": 1.1593994150290161,
+    "tbr": 1.1593994150290161,
+    "constraintsSolution": 1.1593994150290161,
+    "tbrGate": 1.1593994150290161
+  },
+  "parsed_ok": true,
+  "saved_model": false,
+  "requirement": "CentralCellTbrGate",
+  "predicate_pass": true,
+  "predicate_value": true,
+  "evaluator_fatal": "False"
+}

@@ -1,0 +1,31 @@
+# workflow.yaml — file list only.
+#
+# Connectivity (what feeds what, which ports exist, which architecture
+# attributes are bound, which requirements to evaluate) is read from SysML.
+# This file only tells the loader where the packages live and which ones
+# the runner may serialise back to disk.
+
+model:
+  packages:
+    - name: MirrorArchitecture
+      file: sysml_files/MirrorArchitecture.sysml
+      mutable: true
+
+    - name: MirrorRequirements
+      file: sysml_files/MirrorRequirements.sysml
+      mutable: false
+
+    - name: MirrorMdaoStudy
+      file: sysml_files/MirrorMdaoStudy.sysml
+      mutable: true
+
+    - name: NeutronicsDisciplines
+      file: sysml_files/catalogues/neutronics_disciplines.sysml
+      mutable: false
+
+    - name: CostingDisciplines
+      file: sysml_files/catalogues/costing_disciplines.sysml
+      mutable: false
+
+study:
+  study_part: mirrorMultidiscStudy

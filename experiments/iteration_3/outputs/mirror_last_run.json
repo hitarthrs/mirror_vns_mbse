@@ -1,0 +1,72 @@
+{
+  "timestamp_utc": "2026-09-03T16:09:29.622816+00:00",
+  "model": "/home/hrshah3/paratan/mirror_vns_mbse/experiments/iteration_3/sysml_files/mirror_multidisc_mdao.sysml",
+  "model_read": {
+    "fw_thickness_cm": 2.0,
+    "thresholds": {
+      "minimumTbr": 1.05,
+      "maxCapitalCost_Musd": 500.0
+    },
+    "active_disciplines": {
+      "neutronics": "localNeutronics1",
+      "costing": "localCosting1"
+    }
+  },
+  "inputs": {
+    "fw_thickness_cm": 2.0
+  },
+  "disciplines": {
+    "neutronics": {
+      "surrogate_id": 1,
+      "sysml_part": "localNeutronics1",
+      "description": "Linear ROM",
+      "inputs": {
+        "fw_thickness_cm": 2.0
+      },
+      "outputs": {
+        "tbr": 1.1
+      }
+    },
+    "costing": {
+      "surrogate_id": 1,
+      "sysml_part": "localCosting1",
+      "description": "Toy analytical cost model",
+      "inputs": {
+        "fw_thickness_cm": 2.0,
+        "tbr": 1.1
+      },
+      "outputs": {
+        "capitalCost_Musd": 296.0,
+        "lcoe_MWhth": 9.867
+      }
+    }
+  },
+  "outputs": {
+    "tbr": 1.1,
+    "capitalCost_Musd": 296.0,
+    "lcoe_MWhth": 9.867
+  },
+  "stored_solution": {
+    "designVariablesSolution": 2.0,
+    "fwThickness": 2.0,
+    "tbr": 1.1,
+    "capitalCost": 296.0,
+    "lcoe": 9.867,
+    "tbrGate": 1.1,
+    "costGate": 296.0
+  },
+  "parsed_ok": true,
+  "saved_model": false,
+  "requirements": {
+    "CentralCellTbrGate": {
+      "pass": true,
+      "value": true,
+      "fatal": "False"
+    },
+    "CapitalCostGate": {
+      "pass": true,
+      "value": true,
+      "fatal": "False"
+    }
+  }
+}

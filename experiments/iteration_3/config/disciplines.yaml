@@ -1,0 +1,49 @@
+# Discipline registry for iteration_3.
+#
+# Execution order: disciplines run top-to-bottom.  Each discipline
+# declares its inputs (read from the shared results dict) and outputs
+# (written back).  The runner resolves the DAG by execution order here.
+#
+# To add a new discipline:
+#   1. Add an entry below with module, function, sysml_part, inputs, outputs.
+#   2. Add a part def in the matching *_disciplines.sysml catalogue.
+#   3. Add a #discipline stub in mirror_multidisc_mdao.sysml::mdaoStrategy.
+#   4. Wire outputs to model features in model_mutations.py.
+
+execution_order:
+  - neutronics
+  - costing
+
+disciplines:
+
+  neutronics:
+    description: "Neutronics TBR analysis"
+    inputs:  [fw_thickness_cm]
+    outputs: [tbr]
+    surrogates:
+      1:
+        module: mirror_discipline
+        function: run_toy_neutronics
+        sysml_part: localNeutronics1
+        description: "Linear ROM"
+      2:
+        module: mirror_discipline_2
+        function: run_toy_neutronics
+        sysml_part: localNeutronics2
+        description: "Saturating ROM"
+
+  costing:
+    description: "Techno-economic analysis (TEAm_vns)"
+    inputs:  [fw_thickness_cm, tbr]
+    outputs: [capitalCost_Musd, lcoe_MWhth]
+    surrogates:
+      1:
+        module: cost_discipline
+        function: run_toy_costing
+        sysml_part: localCosting1
+        description: "Toy analytical cost model"
+      2:
+        module: cost_discipline_tea
+        function: run_tea_costing
+        sysml_part: localCosting2
+        description: "TEAm_vns generate_report wrapper"
