@@ -118,7 +118,7 @@ reference them (no duplicated literals):
 |---|---|---|
 | `TritiumSelfSufficiency` | blanket | TBR > `minimumTbr` |
 | `MinimumThermalPower` | blanket | power ≥ 50 MW |
-| `MagnetHeatingLimit` | magnets | heating ≤ 90 MW/cc |
+| `MagnetHeatingLimit` | magnets | heating ≤ 5 mW/cc |
 | `CapitalCostLimit` | economics | capital ≤ 500 M$ |
 
 After each evaluation the runner writes results to the architecture and
@@ -203,7 +203,7 @@ promote path back into the living architecture/study files.
 
 ---
 
-## Known limits (honest)
+## Known limits
 
 - Disciplines must form a **DAG** (one forward pass). No ODE4HERA converger loop.  
 - Optimizer is single-objective (LCOE); grid Pareto is bi-objective.  
