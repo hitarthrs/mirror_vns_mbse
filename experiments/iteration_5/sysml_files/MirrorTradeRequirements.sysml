@@ -8,7 +8,7 @@ package MirrorTradeRequirements {
 
     requirement def TritiumSelfSufficiency :> Requirement {
         subject blanketSystem references mirrorTradeNominal.blanket;
-        attribute minimumTbr : ScalarValues::Real = 1.05;
+        attribute minimumTbr : ScalarValues::Real = 1.1;
         require constraint { blanketSystem.tritiumBreedingRatio > minimumTbr }
         :>> verificationStatus = VVStatus::NotStarted;
     }
@@ -21,9 +21,11 @@ package MirrorTradeRequirements {
     }
 
     requirement def MagnetHeatingLimit :> Requirement {
-        subject blanketSystem references mirrorTradeNominal.blanket;
-        attribute maximumMagnetHeating_kW : ScalarValues::Real = 90.0;
-        require constraint { blanketSystem.magnetNuclearHeating_kW <= maximumMagnetHeating_kW }
+        subject magnetSystem references mirrorTradeNominal.magnets;
+        attribute maximumMagnetHeating_MW_per_cc : ScalarValues::Real = 90.0;
+        require constraint {
+            magnetSystem.nuclearHeating_MW_per_cc <= maximumMagnetHeating_MW_per_cc
+        }
         :>> verificationStatus = VVStatus::NotStarted;
     }
 

@@ -12,8 +12,11 @@ package MirrorTradeArchitecture {
         attribute centralCellLength : ScalarValues::Real;
         attribute tritiumBreedingRatio : ScalarValues::Real;
         attribute thermalPower_MW : ScalarValues::Real;
-        attribute magnetNuclearHeating_kW : ScalarValues::Real;
         attribute blanketMass_tonnes : ScalarValues::Real;
+    }
+
+    part def MagnetSystem {
+        attribute nuclearHeating_MW_per_cc : ScalarValues::Real;
     }
 
     part def PlantEconomics {
@@ -32,11 +35,13 @@ package MirrorTradeArchitecture {
             abstract #contX attribute :>> centralCellLength;
             #evalOut attribute :>> tritiumBreedingRatio;
             #evalOut attribute :>> thermalPower_MW;
-            #evalOut attribute :>> magnetNuclearHeating_kW;
             #evalOut attribute :>> blanketMass_tonnes;
         }
+        #subsystem part magnets : MagnetSystem {
+            #evalOut attribute :>> nuclearHeating_MW_per_cc;
+        }
         #subsystem part economics : PlantEconomics {
-            attribute :>> plantAvailability;
+            abstract #contX attribute :>> plantAvailability;
             attribute :>> annualChargeRate;
             attribute :>> electricityPrice_UsdPerMWh;
             #evalOut attribute :>> capitalCost_Musd;
@@ -54,8 +59,10 @@ package MirrorTradeArchitecture {
             attribute :>> centralCellLength = 12 [m];
             attribute :>> tritiumBreedingRatio = 1.080201;
             attribute :>> thermalPower_MW = 80.107608;
-            attribute :>> magnetNuclearHeating_kW = 79.458721;
             attribute :>> blanketMass_tonnes = 231;
+        }
+        part :>> magnets {
+            attribute :>> nuclearHeating_MW_per_cc = 79.458721;
         }
         part :>> economics {
             attribute :>> plantAvailability = 0.85;

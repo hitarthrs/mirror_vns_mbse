@@ -72,7 +72,7 @@ def run_disciplines(graph: ModelGraph, seeds: dict[str, float]) -> dict[str, flo
         if missing_outputs:
             raise RuntimeError(f"{node.part_name} did not return {missing_outputs}")
         outputs = {name: float(raw[name]) for name in node.outputs}
-        log.info("%s inputs=%s outputs=%s", node.part_name, kwargs, outputs)
+        log.debug("%s inputs=%s outputs=%s", node.part_name, kwargs, outputs)
         bus.update(outputs)
     return bus
 
@@ -417,12 +417,15 @@ def run_trade_study(
     if optimize:
         algorithm, max_iter = read_optimizer_settings(strategy)
         guess = initial_design(variables, {})
+        primary_objective = (
+            "lcoe" if "lcoe" in objective_names else objective_names[0]
+        )
         optimized_point, optimized_bus, optimizer_info = optimize_design(
             model,
             graph,
             variables,
             parameters,
-            objective_name=objective_names[0],
+            objective_name=primary_objective,
             algorithm=algorithm,
             max_iter=max_iter,
             initial_guess=guess,
@@ -460,9 +463,15 @@ def run_trade_study(
         front = pareto_front(rows, objective_names)
         if not front:
             raise RuntimeError("the sampled design space contains no feasible point")
+        primary_objective = (
+            "lcoe" if "lcoe" in objective_names else objective_names[0]
+        )
         selected = min(
             front,
-            key=lambda row: tuple(row["results"][name] for name in objective_names),
+            key=lambda row: (
+                row["results"][primary_objective],
+                *(row["results"][name] for name in objective_names if name != primary_objective),
+            ),
         )
         apply_run_results(model, selected["results"], graph)
         mode = "grid"
@@ -493,7 +502,9 @@ def run_trade_study(
     }
     if optimizer_info is not None:
         summary["optimizer"] = optimizer_info
-        summary["optimization_objective"] = objective_names[0]
+        summary["optimization_objective"] = (
+            "lcoe" if "lcoe" in objective_names else objective_names[0]
+        )
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUTPUT_DIR / "trade_study_summary.json").write_text(
         json.dumps(summary, indent=2, default=str) + "\n",
@@ -540,6 +551,71 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def format_summary(summary: dict[str, Any]) -> str:
+    selected = summary["selected"]
+    lines = [
+        "",
+        "=" * 60,
+        "  ITERATION 5 — TRADE STUDY",
+        "=" * 60,
+        f"  Mode              {summary['mode']}",
+        f"  Disciplines       {', '.join(summary['active_analysis_methods'])}",
+        f"  Design variables  {', '.join(summary['design_variables'])}",
+        f"  Objectives        {', '.join(summary['minimization_objectives'])}",
+    ]
+    if summary["mode"] == "optimize":
+        optimizer = summary["optimizer"]
+        lines.append(
+            f"  Optimizer         {optimizer['algorithm']} "
+            f"(success={optimizer['success']}, nfev={optimizer['function_evaluations']})"
+        )
+    lines.extend(
+        [
+            f"  Points            {summary['evaluated_points']} evaluated, "
+            f"{summary['feasible_points']} feasible, {summary['pareto_points']} Pareto",
+            "",
+            "  Selected design  (min LCOE on Pareto front)",
+        ]
+    )
+    for name, value in selected["design"].items():
+        lines.append(f"    {name:22} {value:10.4g}")
+    lines.append("")
+    lines.append("  Selected outputs")
+    design_names = set(selected["design"])
+    for name, value in selected["results"].items():
+        if name in design_names:
+            continue
+        lines.append(f"    {name:22} {value:10.4g}")
+    lines.append("")
+    lines.append("  Requirements")
+    for name, passed in selected["requirements"].items():
+        mark = "PASS" if passed else "FAIL"
+        lines.append(f"    [{mark}]  {name}")
+    front = summary.get("pareto_front") or []
+    if summary["mode"] == "grid" and len(front) > 1:
+        lines.append("")
+        lines.append(f"  Pareto front ({len(front)} non-dominated designs)")
+        obj_names = summary["minimization_objectives"]
+        header = "    " + "  ".join(f"{n:>14}" for n in [*summary["design_variables"], *obj_names])
+        lines.append(header)
+        for row in front[:12]:
+            vals = [row["design"][n] for n in summary["design_variables"]]
+            vals += [row["results"][n] for n in obj_names]
+            lines.append("    " + "  ".join(f"{v:14.4g}" for v in vals))
+        if len(front) > 12:
+            lines.append(f"    ... +{len(front) - 12} more")
+    lines.extend(
+        [
+            "",
+            f"  Feasible          {selected['feasible']}",
+            f"  CSV               {summary['csv']}",
+            "=" * 60,
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def main() -> None:
     args = parse_args()
     overrides = dict(args.design_overrides or [])
@@ -555,28 +631,7 @@ def main() -> None:
         optimize=args.optimize,
         save_selected=args.save_selected,
     )
-
-    selected = summary["selected"]
-    print("\nITERATION 5 — TRADE STUDY")
-    print(f"Mode: {summary['mode']}")
-    print(f"Disciplines: {summary['active_analysis_methods']}")
-    print(f"Design variables: {summary['design_variables']}")
-    print(f"Objectives: {summary['minimization_objectives']}")
-    if summary["mode"] == "optimize":
-        optimizer = summary["optimizer"]
-        print(
-            f"Optimizer: {optimizer['algorithm']} ({optimizer['scipy_method']}), "
-            f"objective={summary['optimization_objective']}, "
-            f"success={optimizer['success']}, nfev={optimizer['function_evaluations']}"
-        )
-    print(
-        f"Points: {summary['evaluated_points']} evaluated, "
-        f"{summary['feasible_points']} feasible, {summary['pareto_points']} Pareto"
-    )
-    print(f"Selected design: {selected['design']}")
-    print(f"Selected outputs: {selected['results']}")
-    print(f"Requirements: {selected['requirements']}")
-    print(f"CSV: {summary['csv']}")
+    print(format_summary(summary))
 
 
 if __name__ == "__main__":

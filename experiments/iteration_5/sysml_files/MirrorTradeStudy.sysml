@@ -15,7 +15,6 @@ package MirrorTradeStudy {
 
         part :>> mdaoProblem {
             attribute firstWallThickness references systemUnderAnalysis.blanket.firstWallThickness;
-            attribute plantAvailability references systemUnderAnalysis.economics.plantAvailability;
             attribute annualChargeRate references systemUnderAnalysis.economics.annualChargeRate;
             attribute electricityPrice
                 references systemUnderAnalysis.economics.electricityPrice_UsdPerMWh;
@@ -30,32 +29,47 @@ package MirrorTradeStudy {
                 :>> lowerBound = 4.0;
                 :>> upperBound = 12.0;
             }
+            #contX attribute plantAvailability
+                references systemUnderAnalysis.economics.plantAvailability {
+                :>> lowerBound = 0.7;
+                :>> upperBound = 0.95;
+            }
 
             #evalOut attribute tbr references systemUnderAnalysis.blanket.tritiumBreedingRatio;
             #evalOut attribute thermalPower references systemUnderAnalysis.blanket.thermalPower_MW;
             #evalOut attribute magnetHeating
-                references systemUnderAnalysis.blanket.magnetNuclearHeating_kW;
+                references systemUnderAnalysis.magnets.nuclearHeating_MW_per_cc;
             #evalOut attribute blanketMass
                 references systemUnderAnalysis.blanket.blanketMass_tonnes;
-            #evalOut attribute capitalCost
+            #evalOut #minObj attribute capitalCost
                 references systemUnderAnalysis.economics.capitalCost_Musd;
             #evalOut attribute annualOperatingCost
                 references systemUnderAnalysis.economics.annualOperatingCost_Musd;
             #evalOut #minObj attribute lcoe references systemUnderAnalysis.economics.lcoe_UsdPerMWh;
 
-            :>> objectives[1] = lcoe;
+            :>> objectives[2] = (capitalCost, lcoe);
 
             #con attribute tbrGate {
-                assert constraint { tbr > 1.05 }
+                doc /* Threshold owned by TritiumSelfSufficiency.minimumTbr */
+                assert constraint { tbr > TritiumSelfSufficiency::minimumTbr }
             }
             #con attribute powerGate {
-                assert constraint { thermalPower >= 50.0 }
+                doc /* Threshold owned by MinimumThermalPower.minimumThermalPower_MW */
+                assert constraint {
+                    thermalPower >= MinimumThermalPower::minimumThermalPower_MW
+                }
             }
             #con attribute heatingGate {
-                assert constraint { magnetHeating <= 90.0 }
+                doc /* Threshold owned by MagnetHeatingLimit.maximumMagnetHeating_MW_per_cc */
+                assert constraint {
+                    magnetHeating <= MagnetHeatingLimit::maximumMagnetHeating_MW_per_cc
+                }
             }
             #con attribute costGate {
-                assert constraint { capitalCost <= 500.0 }
+                doc /* Threshold owned by CapitalCostLimit.maximumCapitalCost_Musd */
+                assert constraint {
+                    capitalCost <= CapitalCostLimit::maximumCapitalCost_Musd
+                }
             }
         }
 
@@ -83,9 +97,10 @@ package MirrorTradeStudy {
             ref part activeAnalysisMethods
                 : DisciplineDefinition [2] references mdaoStrategy.disciplines;
 
-            :>> designVariablesSolution [2] = (breederThickness, centralCellLength);
+            :>> designVariablesSolution [3] = (breederThickness, centralCellLength, plantAvailability);
             :>> breederThickness = 35;
             :>> centralCellLength = 12;
+            :>> plantAvailability = 0.85;
 
             :>> objectiveFunctionSolution [2] = (capitalCost, lcoe);
             :>> capitalCost = 428.887616;
